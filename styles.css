@@ -557,3 +557,12 @@ footer {
     padding: 1rem 0;
   }
 }
+
+@view-transition {
+  navigation: auto;
+}
+
+
+::view-transition-group(*) {
+  animation-duration: 0.5s;
+}

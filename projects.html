@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
+  <script>
+    const t = localStorage.getItem('theme');
+    if (t === 'light') document.documentElement.classList.add('light-mode');
+  </script>
   <title>Projects | Sithu Soe</title>
 </head>
 <body>
@@ -23,7 +27,6 @@
     </nav>
   </header>
   <main class="projects">
-    <h1>Projects</h1>
     <article>
       <h2>CSES Website</h2>
       <h3>Role: Full-Stack Developer</h3>
