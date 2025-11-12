@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Form With JS</title>
+  <style>
+    :root {
+      --bg-primary: #f5f5f5;
+      --bg-secondary: #ffffff;
+      --text-primary: #000000;
+      --text-secondary: #666666;
+      --border-color: #cccccc;
+      --shadow: rgba(0, 0, 0, 0.1);
+      --error-bg: #ffe5e5;
+      --error-border: #cc0000;
+      --error-text: #cc0000;
+      --valid-bg: #e5f7ff;
+      --valid-border: #0077cc;
+      --valid-text: #0077cc;
+      --button-bg: #007bff;
+      --button-hover: #0056b3;
+      --warning-bg: #fff3cd;
+      --warning-text: #856404;
+      --warning-color: #ff8800;
+      --flash-color: #ffcccc;
+    }
+
+    [data-theme="dark"] {
+      --bg-primary: #1a1a1a;
+      --bg-secondary: #2d2d2d;
+      --text-primary: #e0e0e0;
+      --text-secondary: #a0a0a0;
+      --border-color: #444444;
+      --shadow: rgba(0, 0, 0, 0.5);
+      --error-bg: #3d1f1f;
+      --error-border: #ff4444;
+      --error-text: #ff6666;
+      --valid-bg: #1f2d3d;
+      --valid-border: #4499ff;
+      --valid-text: #66aaff;
+      --button-bg: #0066cc;
+      --button-hover: #0052a3;
+      --warning-bg: #3d3520;
+      --warning-text: #ffcc66;
+      --warning-color: #ffaa33;
+      --flash-color: #4d2020;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      padding: 20px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--bg-secondary);
+      border: 2px solid var(--border-color);
+      border-radius: 50px;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 8px var(--shadow);
+      transition: all 0.3s ease;
+      z-index: 1000;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      background: var(--bg-secondary);
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px var(--shadow);
+      width: 100%;
+      max-width: 400px;
+      transition: background-color 0.3s ease;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      color: var(--text-primary);
+    }
+
+    label span {
+      color: var(--error-text);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      font-size: 1rem;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    input.invalid,
+    textarea.invalid {
+      background-color: var(--error-bg);
+      border-color: var(--error-border);
+    }
+
+    input.valid,
+    textarea.valid {
+      background-color: var(--valid-bg);
+      border-color: var(--valid-border);
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .error-message {
+      color: var(--error-text);
+      font-size: 0.85rem;
+      min-height: 1.2em;
+      display: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .error-message.show {
+      display: block;
+      opacity: 1;
+    }
+
+    .error-message.fade-out {
+      opacity: 0;
+    }
+
+    .char-counter {
+      font-size: 0.85rem;
+      text-align: right;
+      color: var(--text-secondary);
+      transition: color 0.2s ease;
+    }
+
+    .char-counter.warning {
+      color: var(--warning-color);
+      font-weight: bold;
+    }
+
+    .char-counter.error {
+      color: var(--error-text);
+      font-weight: bold;
+    }
+
+    button {
+      padding: 0.7rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      background-color: var(--button-bg);
+      color: white;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      margin-top: 0.5rem;
+    }
+
+    button:hover {
+      background-color: var(--button-hover);
+    }
+
+    .form-status {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+      border-radius: 5px;
+      text-align: center;
+      display: none;
+    }
+
+    .form-status.error {
+      background-color: var(--error-bg);
+      color: var(--error-text);
+      display: block;
+    }
+
+    .form-status.success {
+      background-color: var(--valid-bg);
+      color: var(--valid-text);
+      display: block;
+    }
+
+    .form-status.warning {
+      background-color: var(--warning-bg);
+      color: var(--warning-text);
+      display: block;
+    }
+
+    .form-status::before {
+      margin-right: 0.3rem;
+    }
+
+    .form-status.error::before {
+      content: "⚠";
+    }
+
+    .form-status.success::before {
+      content: "✓";
+    }
+
+    .form-status.warning::before {
+      content: "⚠";
+    }
+    
+    @keyframes flash {
+      0%, 100% { background-color: inherit; }
+      50% { background-color: var(--flash-color); }
+    }
+    
+    .flash {
+      animation: flash 0.3s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+
+  <form action="https://httpbin.org/post" method="POST" novalidate>
+    <input type="hidden" name="possible_bot" value="true">
+    <input type="hidden" name="form-errors" id="form-errors-input" value="">
+    <h1>Contact Us</h1>
+    
+    <div class="field-group">
+      <label for="name"><span>*</span> Name:</label>
+      <input type="text" id="name" name="name" required>
+      <span class="error-message" id="name-error"></span>
+    </div>
+    
+    <div class="field-group">
+      <label for="email"><span>*</span> Email:</label>
+      <input type="email" id="email" name="email" required>
+      <span class="error-message" id="email-error"></span>
+    </div>
+    
+    <div class="field-group">
+      <label for="comments"><span>*</span> Comments:</label>
+      <textarea id="comments" name="comments" rows="5" required minlength="10" maxlength="500"></textarea>
+      <div class="char-counter" id="char-counter">500 characters remaining</div>
+      <span class="error-message" id="comments-error"></span>
+    </div>
+    
+    <div class="form-status" id="form-status"></div>
+    
+    <button type="submit">Send</button>
+  </form>
+
+  <script>
+    const themeToggle = document.getElementById('theme-toggle');
+    const htmlElement = document.documentElement;
+    
+    const currentTheme = localStorage.getItem('theme') || 'light';
+    htmlElement.setAttribute('data-theme', currentTheme);
+    themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+    
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = htmlElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      htmlElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    });
+
+    const form = document.querySelector('form');
+    const nameInput = document.getElementById('name');
+    const emailInput = document.getElementById('email');
+    const commentsInput = document.getElementById('comments');
+    const formStatus = document.getElementById('form-status');
+    const submitButton = form.querySelector('button[type="submit"]');
+    const charCounter = document.getElementById('char-counter');
+    const formErrorsInput = document.getElementById('form-errors-input');
+
+    const patterns = {
+      name: /^[a-zA-Z\s\-']+$/,
+      email: /^[a-zA-Z0-9@._\-+]+$/,
+    };
+
+    const validationMessages = {
+      name: {
+        valueMissing: 'Please enter your name',
+        tooShort: 'Name is too short',
+        illegal: 'Name can only contain letters, spaces, hyphens, and apostrophes'
+      },
+      email: {
+        valueMissing: 'Please enter your email address',
+        typeMismatch: 'Please enter a valid email address (e.g., name@example.com)',
+        patternMismatch: 'Please enter a valid email address',
+        illegal: 'Email contains invalid characters'
+      },
+      comments: {
+        valueMissing: 'Please enter your comments',
+        tooShort: 'Comments must be at least 10 characters long',
+        tooLong: 'Comments cannot exceed 500 characters'
+      }
+    };
+
+    function updateCharCounter() {
+      const maxLength = 500;
+      const currentLength = commentsInput.value.length;
+      const remaining = maxLength - currentLength;
+      
+      charCounter.textContent = `${remaining} character${remaining !== 1 ? 's' : ''} remaining`;
+      
+      charCounter.classList.remove('warning', 'error');
+      
+      if (remaining === 0) {
+        charCounter.classList.add('error');
+      } else if (remaining <= 50) {
+        charCounter.classList.add('warning');
+      }
+      
+      if (remaining === 0) {
+        validateField(commentsInput);
+      }
+    }
+
+    function flashFieldError(input, message) {
+      const errorSpan = document.getElementById(`${input.id}-error`);
+      
+      input.classList.add('flash');
+      setTimeout(() => input.classList.remove('flash'), 300);
+      
+      errorSpan.textContent = message;
+      errorSpan.classList.remove('fade-out');
+      errorSpan.classList.add('show');
+      
+      setTimeout(() => {
+        errorSpan.classList.add('fade-out');
+        setTimeout(() => {
+          if (errorSpan.classList.contains('fade-out')) {
+            errorSpan.classList.remove('show', 'fade-out');
+          }
+        }, 300);
+      }, 2000);
+    }
+
+    function maskInput(e) {
+      const input = e.target;
+      const pattern = patterns[input.id];
+      
+      if (!pattern) return;
+      
+      const char = e.data;
+      
+      if (char && !pattern.test(char)) {
+        e.preventDefault();
+        flashFieldError(input, validationMessages[input.id].illegal);
+      }
+    }
+
+    function handlePaste(e) {
+      const input = e.target;
+      const pattern = patterns[input.id];
+      
+      if (!pattern) return;
+      
+      e.preventDefault();
+      const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+      const filteredText = pastedText.split('').filter(char => pattern.test(char)).join('');
+      
+      if (filteredText !== pastedText) {
+        flashFieldError(input, validationMessages[input.id].illegal);
+      }
+      
+      const start = input.selectionStart;
+      const end = input.selectionEnd;
+      const value = input.value;
+      input.value = value.slice(0, start) + filteredText + value.slice(end);
+      input.setSelectionRange(start + filteredText.length, start + filteredText.length);
+      
+      if (input.classList.contains('invalid') || input.classList.contains('valid')) {
+        validateField(input);
+        updateFormStatus();
+      }
+    }
+
+    function validateField(input) {
+      const errorSpan = document.getElementById(`${input.id}-error`);
+      const fieldMessages = validationMessages[input.id];
+      
+      input.setCustomValidity('');
+      
+      if (input.id === 'comments' && input.value.length > 500) {
+        input.setCustomValidity(fieldMessages.tooLong);
+        errorSpan.textContent = fieldMessages.tooLong;
+        errorSpan.classList.remove('fade-out');
+        errorSpan.classList.add('show');
+        input.classList.add('invalid');
+        input.classList.remove('valid');
+        return false;
+      }
+      
+      const isValid = input.checkValidity();
+      
+      if (!isValid) {
+        let errorMessage = '';
+        
+        if (input.validity.valueMissing) {
+          errorMessage = fieldMessages.valueMissing;
+        } else if (input.validity.typeMismatch) {
+          errorMessage = fieldMessages.typeMismatch;
+        } else if (input.validity.tooShort) {
+          errorMessage = fieldMessages.tooShort;
+        } else if (input.validity.patternMismatch) {
+          errorMessage = fieldMessages.patternMismatch;
+        }
+        
+        input.setCustomValidity(errorMessage);
+        errorSpan.textContent = errorMessage;
+        errorSpan.classList.remove('fade-out');
+        errorSpan.classList.add('show');
+        input.classList.add('invalid');
+        input.classList.remove('valid');
+      } else {
+        errorSpan.textContent = '';
+        errorSpan.classList.remove('show', 'fade-out');
+        input.classList.remove('invalid');
+        input.classList.add('valid');
+      }
+      
+      return isValid;
+    }
+
+    function collectFormErrors() {
+      const errors = [];
+      
+      [nameInput, emailInput, commentsInput].forEach(input => {
+        const fieldMessages = validationMessages[input.id];
+        const value = input.value.trim();
+        
+        if (value === '') {
+          errors.push({
+            field: input.id,
+            fieldName: input.name,
+            errorType: 'valueMissing',
+            errorMessage: fieldMessages.valueMissing,
+            value: value
+          });
+        } else {
+          if (input.id === 'name') {
+            if (!patterns.name.test(value)) {
+              errors.push({
+                field: input.id,
+                fieldName: input.name,
+                errorType: 'patternMismatch',
+                errorMessage: fieldMessages.illegal,
+                value: value
+              });
+            }
+          } else if (input.id === 'email') {
+            if (!input.checkValidity()) {
+              if (input.validity.typeMismatch) {
+                errors.push({
+                  field: input.id,
+                  fieldName: input.name,
+                  errorType: 'typeMismatch',
+                  errorMessage: fieldMessages.typeMismatch,
+                  value: value
+                });
+              } else if (!patterns.email.test(value)) {
+                errors.push({
+                  field: input.id,
+                  fieldName: input.name,
+                  errorType: 'patternMismatch',
+                  errorMessage: fieldMessages.illegal,
+                  value: value
+                });
+              }
+            }
+          } else if (input.id === 'comments') {
+            if (value.length < 10) {
+              errors.push({
+                field: input.id,
+                fieldName: input.name,
+                errorType: 'tooShort',
+                errorMessage: fieldMessages.tooShort,
+                value: value,
+                currentLength: value.length,
+                requiredLength: 10
+              });
+            } else if (value.length > 500) {
+              errors.push({
+                field: input.id,
+                fieldName: input.name,
+                errorType: 'tooLong',
+                errorMessage: fieldMessages.tooLong,
+                value: value,
+                currentLength: value.length,
+                maxLength: 500
+              });
+            }
+          }
+        }
+      });
+      
+      return errors;
+    }
+
+    function updateFormStatus() {
+      const allValid = form.checkValidity() && commentsInput.value.length <= 500;
+      
+      if (allValid) {
+        formStatus.textContent = 'All fields are valid! Ready to submit.';
+        formStatus.className = 'form-status success';
+      } else {
+        const anyTouched = [nameInput, emailInput, commentsInput].some(input => 
+          input.classList.contains('valid') || input.classList.contains('invalid')
+        );
+        
+        if (anyTouched) {
+          formStatus.textContent = 'Form has errors but can still be submitted';
+          formStatus.className = 'form-status warning';
+        } else {
+          formStatus.className = 'form-status';
+        }
+      }
+    }
+
+    nameInput.addEventListener('beforeinput', maskInput);
+    emailInput.addEventListener('beforeinput', maskInput);
+    
+    nameInput.addEventListener('paste', handlePaste);
+    emailInput.addEventListener('paste', handlePaste);
+
+    commentsInput.addEventListener('input', updateCharCounter);
+
+    [nameInput, emailInput, commentsInput].forEach(input => {
+      input.addEventListener('blur', () => {
+        validateField(input);
+        updateFormStatus();
+      });
+      
+      input.addEventListener('input', () => {
+        if (input.classList.contains('invalid') || input.classList.contains('valid')) {
+          validateField(input);
+          updateFormStatus();
+        }
+      });
+    });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      validateField(nameInput);
+      validateField(emailInput);
+      validateField(commentsInput);
+      
+      const formErrors = collectFormErrors();
+      
+      formErrorsInput.value = JSON.stringify(formErrors);
+      
+      if (formErrors.length === 0) {
+        formStatus.textContent = 'Submitting with no errors...';
+        formStatus.className = 'form-status success';
+      } else {
+        formStatus.textContent = `Submitting with ${formErrors.length} error(s)...`;
+        formStatus.className = 'form-status warning';
+      }
+      
+      setTimeout(() => {
+        form.submit();
+      }, 500);
+    });
+
+    updateCharCounter();
+    updateFormStatus();
+  </script>
+</body>
+</html>

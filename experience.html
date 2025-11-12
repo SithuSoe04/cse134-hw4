@@ -1,20 +1,9 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
-  <title>Experience</title>
-  <style>
-    highlight-box {
-      display: block;
-      padding: 1rem;
-      margin: 1rem 0;
-      border-left: 5px solid #2c3e50;
-      background-color: #f0f0f0;
-      font-style: italic;
-    }
-  </style>
+  <title>Experience | Sithu Soe</title>
 </head>
 <body>
   <header>
@@ -28,6 +17,7 @@
         <li><a href="projects.html">Projects</a></li>
         <li><a href="experience.html" class="active">Experience</a></li>
         <li><a href="contact.html">Contact</a></li>
+        <li><button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button></li>
       </ul>
     </nav>
   </header>
@@ -41,7 +31,6 @@
             <p>Major: Mathematics - Computer Science</p>
             <p>Expected Graduation: June 2026</p>
           </div>
-          <!-- <img src="/assets/ucsdlogo.png" alt="UCSD Logo" width="100" class="logo"> -->
           <picture>
             <source media="(max-width: 600px)" srcset="/assets/ucsdlogo-small.webp" type="image/webp">
             <source srcset="/assets/ucsdlogo.webp" type="image/webp">
@@ -51,7 +40,7 @@
               loading="lazy" 
               style="object-fit: cover; object-position: center; border-radius: 8px; max-width: 150px; height: auto;"
             >
-        </picture>
+          </picture>
         </section>
         <label for="ts">Graduation Progress</label>
         <progress id="ts" value="77" max="100">77%</progress>
@@ -80,5 +69,7 @@
   <footer>
     <p>&copy; 2025 Sithu Soe. All rights reserved.</p>
   </footer>
+
+  <script src="theme-toggle.js"></script>
 </body>
 </html>
